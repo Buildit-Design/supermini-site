@@ -13,11 +13,60 @@
   ];
   window.SMC_SCHEDULE = SCHEDULE;
 
-  const TRACKS = {
-    "The Bend Motorsport Park": "assets/img/tracks/the-bend.png?v=5",
-    "Sydney Motorsport Park":   "assets/img/tracks/sydney.png?v=5",
-    "Queensland Raceway":       "assets/img/tracks/queensland.png?v=5",
-    "Morgan Park":              "assets/img/tracks/morgan-park.png?v=5",
+  /* Per-circuit presentation data — single source of truth for the home hero
+     image, the event page and the calendar track maps. Add a circuit here and
+     every data-driven page picks it up automatically.
+     NOTE: real `hero` photos exist for Queensland Raceway and The Bend only;
+     the other two fall back to hero-grid.jpg until photos are supplied.
+     `blurb` is the intro sentence on the event page — review the wording. */
+  const CIRCUITS = {
+    "The Bend Motorsport Park": {
+      short: "The Bend",
+      city:  "Tailem Bend, South Australia",
+      map:   "assets/img/tracks/the-bend.png?v=5",
+      hero:  "assets/img/hero-bend.png",
+      blurb: "one of the longest and most modern circuits in the world",
+    },
+    "Sydney Motorsport Park": {
+      short: "Sydney Motorsport Park",
+      city:  "Eastern Creek, New South Wales",
+      map:   "assets/img/tracks/sydney.png?v=5",
+      hero:  "assets/img/hero-grid.jpg",
+      blurb: "Sydney's home of circuit racing",
+    },
+    "Queensland Raceway": {
+      short: "Queensland Raceway",
+      city:  "Ipswich, Queensland",
+      map:   "assets/img/tracks/queensland.png?v=5",
+      hero:  "assets/img/hero-qr.webp?v=2",
+      blurb: "a fast, flat circuit just west of Brisbane",
+    },
+    "Morgan Park": {
+      short: "Morgan Park",
+      city:  "Warwick, Queensland",
+      map:   "assets/img/tracks/morgan-park.png?v=5",
+      hero:  "assets/img/hero-grid.jpg",
+      blurb: "a tight, technical circuit on the Darling Downs",
+    },
+  };
+  window.SMC_CIRCUITS = CIRCUITS;
+
+  const FALLBACK_HERO = "assets/img/hero-grid.jpg";
+  function circuitOf(name) { return CIRCUITS[name] || {}; }
+
+  /* Derived from CIRCUITS so there is only one place to edit. */
+  const TRACKS = {};
+  Object.keys(CIRCUITS).forEach(function (k) { TRACKS[k] = CIRCUITS[k].map; });
+
+  /* Default session pattern by event length (number of days). A round can
+     override it by adding a `sessions` array to its SCHEDULE entry, e.g.
+       sessions: [[0,"Practice"],[1,"Qualifying"],[1,"Race 1"]]
+     where the first value is the day offset from `start`.
+     These are assumed patterns — actual times come from the supp regs. */
+  const SESSION_PATTERNS = {
+    1: [[0, "Qualifying"], [0, "Race 1"], [0, "Race 2"]],
+    2: [[0, "Practice"], [0, "Qualifying"], [0, "Race 1"], [1, "Race 2"], [1, "Race 3"]],
+    3: [[0, "Practice"], [1, "Qualifying"], [1, "Race 1"], [2, "Race 2"], [2, "Race 3"]],
   };
 
   const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -41,6 +90,36 @@
     return SCHEDULE
       .filter(function (r) { return status(r, now) !== "complete"; })
       .sort(function (x, y) { return startDT(x.start) - startDT(y.start); })[0] || null;
+  }
+
+  function lastRace() {
+    return SCHEDULE.slice()
+      .sort(function (x, y) { return startDT(y.start) - startDT(x.start); })[0] || null;
+  }
+
+  const DAY_NAMES = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  const MON_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+  /* Inclusive day count for a round: 19–20 Sep = 2, 21–23 Aug = 3. */
+  function dayCount(r) {
+    return Math.round((startDT(r.end) - startDT(r.start)) / 86400000) + 1;
+  }
+
+  function dayLabel(startStr, offset) {
+    const d = startDT(startStr);
+    d.setDate(d.getDate() + offset);
+    return DAY_NAMES[d.getDay()] + " " + d.getDate() + " " + MON_SHORT[d.getMonth()];
+  }
+
+  function sessionsFor(r) {
+    return r.sessions || SESSION_PATTERNS[dayCount(r)] || SESSION_PATTERNS[3];
+  }
+
+  /* Compact range for the spec tiles: "19–20 Sep", "28 Feb – 1 Mar". */
+  function shortRange(start, end) {
+    const a = start.split("-").map(Number), b = end.split("-").map(Number);
+    if (a[1] === b[1]) return a[2] + "–" + b[2] + " " + MON_SHORT[b[1] - 1];
+    return a[2] + " " + MON_SHORT[a[1] - 1] + " – " + b[2] + " " + MON_SHORT[b[1] - 1];
   }
 
   function paintCalendar(now) {
@@ -168,10 +247,98 @@
     setInterval(tick, 60000);
   }
 
+  /* Home hero photo follows whichever circuit is next up. */
+  function paintHeroImage() {
+    const el = document.querySelector(".hero-bg");
+    if (!el) return;
+    const r = nextRace(new Date()) || lastRace();
+    if (!r) return;
+    const src = circuitOf(r.circuit).hero || FALLBACK_HERO;
+    /* Resolve to an absolute URL first. A url() substituted through a custom
+       property is resolved against the STYLESHEET (assets/), not the document,
+       so a bare "assets/img/…" would become "assets/assets/img/…". */
+    el.style.setProperty("--hero-img", "url('" + new URL(src, document.baseURI).href + "')");
+  }
+
+  /* Event page. Follows the next round automatically. To pin the page to a
+     specific round instead, put data-start="YYYY-MM-DD" on #event-page. */
+  function paintEventPage() {
+    const root = document.getElementById("event-page");
+    if (!root) return;
+
+    let r = null;
+    if (root.dataset.start) {
+      r = SCHEDULE.filter(function (x) { return x.start === root.dataset.start; })[0] || null;
+    }
+    const upcoming = nextRace(new Date());
+    const seasonOver = !r && !upcoming;
+    if (!r) r = upcoming || lastRace();
+    if (!r) return;
+
+    const c = circuitOf(r.circuit);
+    const name = r.circuit;
+    const short = c.short || name;
+    const roundNo = r.round.replace(/^R/, "");
+    const range = prettyRange(r.start, r.end);
+    const parts = (c.city || "").split(",");
+    const town = (parts[0] || "").trim();
+    const region = (parts[1] || "").trim() || r.loc;
+
+    function set(id, text) { const el = document.getElementById(id); if (el) el.textContent = text; }
+
+    document.title = name + " — Round " + roundNo + " | SuperMini Challenge";
+    const md = document.querySelector('meta[name="description"]');
+    if (md) {
+      md.setAttribute("content", "Event info for the SuperMini Challenge at " + name +
+        " — Round " + roundNo + " of the " + r.series + ", " + range + ".");
+    }
+
+    const heroEl = document.getElementById("ev-hero");
+    if (heroEl) {
+      heroEl.style.backgroundImage =
+        "linear-gradient(90deg,rgba(11,13,17,.86),rgba(11,13,17,.45) 70%,rgba(11,13,17,.35))," +
+        "url(" + (c.hero || FALLBACK_HERO) + ")";
+    }
+
+    set("ev-crumb", short);
+    set("ev-eyebrow", seasonOver ? "Season complete · last round" : r.series + " · Round " + roundNo);
+    set("ev-title", name);
+    set("ev-dates", range + " · " + (c.city || r.loc));
+    set("ev-spec-round", "Round " + roundNo);
+    set("ev-spec-series", r.series.replace(/^Rubber Craft /, ""));
+    set("ev-spec-dates", shortRange(r.start, r.end));
+    set("ev-spec-year", r.start.slice(0, 4));
+    set("ev-spec-circuit", short);
+    set("ev-spec-city", c.city || r.loc);
+    set("ev-circuit-h2", name);
+    set("ev-join-h2", "Race at " + short);
+    set("ev-spectator-circuit", short);
+    set("ev-blurb", "The SuperMini Challenge heads to " + region + " for Round " + roundNo +
+      " of the " + r.series + " at " + name + (town ? ", " + town : "") +
+      (c.blurb ? " — " + c.blurb : "") + ".");
+
+    const cd = document.getElementById("ev-countdown");
+    if (cd) cd.dataset.date = r.start;
+
+    const mapEl = document.getElementById("ev-map");
+    if (mapEl && c.map) { mapEl.src = c.map; mapEl.alt = name + " circuit map"; }
+
+    const tb = document.getElementById("ev-timetable");
+    if (tb) {
+      tb.innerHTML = sessionsFor(r).map(function (s) {
+        return "<tr><td>" + dayLabel(r.start, s[0]) + "</td><td>" + s[1] + "</td></tr>";
+      }).join("");
+    }
+
+    root.hidden = false;
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     paintCalendar(new Date());
     paintNextRace();
     paintHeroCountdown();
+    paintHeroImage();
+    paintEventPage();   // must run before paintEventDays — it sets the target date
     paintEventDays();
   });
 })();

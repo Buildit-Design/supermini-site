@@ -102,7 +102,7 @@ nav.main a:hover,nav.main a.active{color:var(--ink)}
   background:
     linear-gradient(90deg,#0b0d11 0%,rgba(11,13,17,.92) 30%,rgba(11,13,17,.55) 60%,rgba(11,13,17,.5) 100%),
     radial-gradient(700px 380px at 82% 12%,rgba(232,17,45,.22),transparent 60%),
-    url(img/hero-bend.png) center/cover no-repeat;}
+    var(--hero-img,url(img/hero-qr.webp?v=2)) center/cover no-repeat;}
 .hero::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:clamp(48px,7vw,110px);background:var(--bg-2);clip-path:polygon(0 100%,100% 0,100% 100%);z-index:1}
 .hero .wrap{position:relative;z-index:2;width:100%}
 .hero h1{font-size:clamp(2rem,4.2vw,3.3rem);text-transform:uppercase;color:#fff}

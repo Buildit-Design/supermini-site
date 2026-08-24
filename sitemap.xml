@@ -7,6 +7,7 @@
   <url><loc>https://supermini.au/results</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://supermini.au/drivers</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://supermini.au/news</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://supermini.au/news-aus-champions</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
   <url><loc>https://supermini.au/news-bathurst</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
   <url><loc>https://supermini.au/get-involved</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://supermini.au/sponsors</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
