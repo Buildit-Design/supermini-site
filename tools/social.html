@@ -14,17 +14,18 @@ header{background:#fff;border-bottom:1px solid var(--line);padding:14px 22px;dis
 header img{height:40px}
 header h1{font-family:var(--head);font-size:1.1rem;font-weight:800}
 header span{color:var(--muted);font-size:.85rem}
-.app{display:grid;grid-template-columns:360px 1fr;gap:0;min-height:calc(100vh - 69px)}
+.app{display:grid;grid-template-columns:370px 1fr;gap:0;min-height:calc(100vh - 69px)}
 .panel{background:#fff;border-right:1px solid var(--line);padding:20px;overflow-y:auto}
 .stage{display:flex;align-items:center;justify-content:center;padding:28px;background:#e9edf2;overflow:auto}
 .stage canvas{max-width:100%;max-height:calc(100vh - 130px);box-shadow:0 10px 40px rgba(0,0,0,.25);background:#111}
 .group{margin-bottom:18px}
 .group h3{font-family:var(--head);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:8px}
 label{display:block;font-size:.8rem;color:var(--muted);margin:8px 0 4px}
-input[type=text],select{width:100%;border:1px solid var(--line);border-radius:6px;padding:9px 11px;font:inherit;background:var(--bg)}
+input[type=text],textarea{width:100%;border:1px solid var(--line);border-radius:6px;padding:9px 11px;font:inherit;background:var(--bg)}
+textarea{font-family:ui-monospace,Menlo,monospace;font-size:.85rem;line-height:1.5}
 input[type=range]{width:100%}
 .seg{display:flex;gap:6px;flex-wrap:wrap}
-.seg button{flex:1;border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:9px 6px;font:inherit;font-weight:600;cursor:pointer;font-size:.8rem}
+.seg button{flex:1;border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:9px 6px;font:inherit;font-weight:600;cursor:pointer;font-size:.8rem;white-space:nowrap}
 .seg button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 .btn{display:block;width:100%;border:0;border-radius:6px;padding:13px;font:inherit;font-weight:800;font-family:var(--head);letter-spacing:.06em;text-transform:uppercase;cursor:pointer;margin-top:8px}
 .btn-primary{background:var(--accent);color:#fff}
@@ -33,6 +34,7 @@ input[type=range]{width:100%}
 .drop.over{border-color:var(--accent);color:var(--accent)}
 .hint{font-size:.75rem;color:var(--muted);margin-top:6px}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hide{display:none}
 @media(max-width:820px){.app{grid-template-columns:1fr}.panel{border-right:0;border-bottom:1px solid var(--line)}}
 </style>
 </head>
@@ -64,31 +66,62 @@ input[type=range]{width:100%}
     <h3>Template</h3>
     <div class="seg" id="tpl">
       <button data-t="none">Photo only</button>
+      <button data-t="schedule">Schedule</button>
       <button data-t="pole" class="on">Pole position</button>
       <button data-t="race">Race winner</button>
       <button data-t="round">Round winner</button>
-      <button data-t="result">Results</button>
+    </div>
+    <div id="slideWrap">
+      <label>Slide</label>
+      <div class="seg" id="slide">
+        <button data-s="cover" class="on">1 · Cover</button>
+        <button data-s="results">2 · Results (swipe)</button>
+      </div>
     </div>
   </div>
 
-  <div class="group" id="fields">
-    <h3>Details</h3>
+  <div class="group">
+    <h3>Round</h3>
+    <label>Round</label><input type="text" id="round" value="Round 5 · Morgan Park">
+    <label>Championship</label><input type="text" id="champ" value="Rubber Craft Queensland State Championship">
+  </div>
+
+  <div class="group" id="fDriver">
+    <h3>Cover</h3>
     <label>Driver</label><input type="text" id="driver" value="Josh Mills">
     <div class="row">
       <div><label>Car #</label><input type="text" id="car" value="3"></div>
-      <div><label>Race (for race winner)</label><input type="text" id="race" value="Race 1"></div>
+      <div><label>Race (race winner only)</label><input type="text" id="race" value="Race 1"></div>
     </div>
-    <label>Round</label><input type="text" id="round" value="Round 5 · Morgan Park">
-    <label>Championship</label><input type="text" id="champ" value="Rubber Craft Queensland State Championship">
-    <label>Line 2 (optional, e.g. lap time or 2nd/3rd)</label><input type="text" id="sub" value="">
-    <label>Results list (results template, one per line: pos, name)</label>
-    <textarea id="list" rows="5" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:9px 11px;font:inherit;background:var(--bg)">1. Josh Mills
-2. Trent Spencer
-3. Zane Goddard</textarea>
+    <label>Line 2 (optional, e.g. lap time)</label><input type="text" id="sub" value="">
   </div>
 
-  <button class="btn btn-primary" id="dl">Download PNG</button>
-  <p class="hint">Files are named by template, driver and format.</p>
+  <div class="group" id="fList">
+    <h3>Results</h3>
+    <label>One per line: position, name, optional time/points at the end</label>
+    <textarea id="list" rows="8">1 Josh Mills 1:22.41
+2 Trent Spencer +0.312
+3 Zane Goddard +0.788
+4 Mark Campbell +1.104
+5 Dan Butler +1.650</textarea>
+    <p class="hint">Up to 10 rows fit on a 4:5 post. Leave the time off if you don't want it shown.</p>
+  </div>
+
+  <div class="group" id="fSched">
+    <h3>Schedule</h3>
+    <label>Dates (shown under the heading)</label><input type="text" id="dates" value="Saturday 12 – Sunday 13 September">
+    <label>One session per line: day, time, session (separate with a dash)</label>
+    <textarea id="sched" rows="9">Sat 09:40 - Practice 1
+Sat 12:10 - Practice 2
+Sat 15:05 - Qualifying
+Sun 09:20 - Race 1
+Sun 12:40 - Race 2
+Sun 15:15 - Race 3</textarea>
+  </div>
+
+  <button class="btn btn-primary" id="dl">Download this slide</button>
+  <button class="btn btn-ghost" id="dlBoth">Download cover + results</button>
+  <p class="hint">Files are named by template, slide and format.</p>
 </div>
 
 <div class="stage"><canvas id="c" width="1080" height="1350"></canvas></div>
@@ -98,7 +131,7 @@ input[type=range]{width:100%}
 (function(){
 const c=document.getElementById('c'),ctx=c.getContext('2d');
 const ACCENT='#e8112d';
-let img=null,logo=new Image(),tpl='pole',W=1080,H=1350,zoom=1,ox=0,oy=0,drag=null;
+let img=null,logo=new Image(),tpl='pole',slide='cover',W=1080,H=1350,zoom=1,ox=0,oy=0,drag=null;
 logo.src='../assets/logo-white.png';
 logo.onload=draw;
 
@@ -111,9 +144,20 @@ drop.ondragleave=()=>drop.classList.remove('over');
 drop.ondrop=e=>{e.preventDefault();drop.classList.remove('over');load(e.dataTransfer.files[0])};
 function load(f){if(!f)return;const i=new Image();i.onload=()=>{img=i;zoom=1;ox=oy=0;document.getElementById('zoom').value=1;draw()};i.src=URL.createObjectURL(f)}
 document.getElementById('zoom').oninput=e=>{zoom=+e.target.value;draw()};
-document.querySelectorAll('#fmt button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#fmt button').forEach(x=>x.classList.remove('on'));b.classList.add('on');W=+b.dataset.w;H=+b.dataset.h;c.width=W;c.height=H;ox=oy=0;draw()});
-document.querySelectorAll('#tpl button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#tpl button').forEach(x=>x.classList.remove('on'));b.classList.add('on');tpl=b.dataset.t;draw()});
-['driver','car','race','round','champ','sub','list'].forEach(id=>document.getElementById(id).oninput=draw);
+function seg(id,fn){document.querySelectorAll('#'+id+' button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#'+id+' button').forEach(x=>x.classList.remove('on'));b.classList.add('on');fn(b);draw()})}
+seg('fmt',b=>{W=+b.dataset.w;H=+b.dataset.h;c.width=W;c.height=H;ox=oy=0});
+seg('tpl',b=>{tpl=b.dataset.t;showFields()});
+seg('slide',b=>{slide=b.dataset.s;showFields()});
+['driver','car','race','round','champ','sub','list','dates','sched'].forEach(id=>document.getElementById(id).oninput=draw);
+function showFields(){
+  const hasSlides=['pole','race','round'].includes(tpl);
+  document.getElementById('slideWrap').classList.toggle('hide',!hasSlides);
+  document.getElementById('fDriver').classList.toggle('hide',!(hasSlides&&slide==='cover'));
+  document.getElementById('fList').classList.toggle('hide',!(hasSlides&&slide==='results'));
+  document.getElementById('fSched').classList.toggle('hide',tpl!=='schedule');
+  document.getElementById('dlBoth').classList.toggle('hide',!hasSlides);
+}
+showFields();
 
 // --- drag photo
 c.onmousedown=e=>{drag={x:e.clientX,y:e.clientY,ox,oy}};
@@ -130,7 +174,6 @@ const body=(px,w=600)=>`${w} ${px}px Inter, sans-serif`;
 function draw(){
   ctx.clearRect(0,0,W,H);
   ctx.fillStyle='#161a20';ctx.fillRect(0,0,W,H);
-  // photo, cover-fit with zoom/offset
   if(img){
     const s=Math.max(W/img.width,H/img.height)*zoom;
     const w=img.width*s,h=img.height*s;
@@ -140,61 +183,109 @@ function draw(){
   }
   if(tpl==='none'){logoMark();return;}
 
-  // bottom gradient
-  const gh=tpl==='result'?H*0.72:H*0.55;
-  const g=ctx.createLinearGradient(0,H-gh,0,H);
-  g.addColorStop(0,'rgba(11,13,17,0)');g.addColorStop(0.45,'rgba(11,13,17,.75)');g.addColorStop(1,'rgba(11,13,17,.96)');
-  ctx.fillStyle=g;ctx.fillRect(0,H-gh,W,gh);
+  const m=Math.round(Math.min(W,H)*0.07);
+  const base=Math.min(W,H)/1080;
+  const isList=tpl==='schedule'||slide==='results';
+  // darken: full-height tint for list slides, bottom gradient for covers
+  if(isList){
+    ctx.fillStyle='rgba(11,13,17,.55)';ctx.fillRect(0,0,W,H);
+    const g=ctx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,'rgba(11,13,17,.1)');g.addColorStop(1,'rgba(11,13,17,.7)');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  }else{
+    const gh=H*0.55;
+    const g=ctx.createLinearGradient(0,H-gh,0,H);
+    g.addColorStop(0,'rgba(11,13,17,0)');g.addColorStop(0.45,'rgba(11,13,17,.75)');g.addColorStop(1,'rgba(11,13,17,.96)');
+    ctx.fillStyle=g;ctx.fillRect(0,H-gh,W,gh);
+  }
   logoMark();
-
-  const m=Math.round(Math.min(W,H)*0.07);   // margin
-  const base=Math.min(W,H)/1080;              // scale factor
   ctx.textAlign='left';ctx.textBaseline='alphabetic';
 
-  if(tpl==='result'){
-    let y=H-m;
-    ctx.fillStyle='#cfd5de';ctx.font=body(Math.round(30*base),500);
-    const metaLh=Math.round(40*base);
-    const metaLines=wrapLines(v('round')+' · '+v('champ'),W-2*m);
-    metaLines.slice().reverse().forEach((l,i)=>ctx.fillText(l,m,y-i*metaLh));
-    y-=metaLines.length*metaLh+Math.round(24*base);
-    const lines=v('list').split('\n').filter(Boolean).reverse();
-    ctx.font=head(Math.round(56*base),800);
-    lines.forEach(l=>{
-      const mm=l.match(/^(\d+)[.)]?\s*(.*)$/);const pos=mm?mm[1]:'',name=mm?mm[2]:l;
-      ctx.fillStyle=ACCENT;ctx.font=head(Math.round(56*base),800);ctx.fillText(pos,m,y);
-      ctx.fillStyle='#fff';ctx.fillText(name,m+Math.round(84*base),y);
-      y-=Math.round(72*base);
-    });
-    y-=Math.round(4*base);
-    ctx.fillStyle=ACCENT;ctx.fillRect(m,y-Math.round(6*base),Math.round(70*base),Math.round(6*base));
-    eyebrow('RESULTS · '+v('race').toUpperCase(),m,y-Math.round(22*base));
-    carNumber(m,base);
-    return;
-  }
+  if(tpl==='schedule')return drawSchedule(m,base);
+  if(slide==='results')return drawResults(m,base);
+  drawCover(m,base);
+}
 
+function drawCover(m,base){
   const title={pole:'POLE POSITION',race:v('race').toUpperCase()+' WINNER',round:'ROUND WINNER'}[tpl];
   let y=H-m;
-  // meta line(s), bottom-up
   ctx.fillStyle='#cfd5de';ctx.font=body(Math.round(30*base),500);
   const metaLh=Math.round(40*base);
   const metaLines=wrapLines(v('round')+' · '+v('champ'),W-2*m);
   metaLines.slice().reverse().forEach((l,i)=>ctx.fillText(l,m,y-i*metaLh));
   y-=metaLines.length*metaLh+Math.round(18*base);
   if(v('sub')){ctx.fillStyle='#fff';ctx.font=body(Math.round(36*base),600);ctx.fillText(v('sub'),m,y);y-=Math.round(56*base);}
-  // driver name, big, wrapped, bottom-up
   const nameSize=Math.round((tpl==='round'?118:110)*base);
   ctx.fillStyle='#fff';ctx.font=head(nameSize,900);
   const nl=wrapLines(v('driver').toUpperCase(),W-2*m);
   nl.slice().reverse().forEach((l,i)=>ctx.fillText(l,m,y-i*nameSize*0.96));
-  y-=(nl.length-1)*nameSize*0.96;         // baseline of the top name line
+  y-=(nl.length-1)*nameSize*0.96;
   const topOfName=y-nameSize*0.74;
-  // red bar + eyebrow above the name
-  const barY=topOfName-Math.round(22*base);
-  ctx.fillStyle=ACCENT;ctx.fillRect(m,barY-Math.round(6*base),Math.round(70*base),Math.round(6*base));
-  eyebrow(title,m,barY-Math.round(22*base));
+  bar(m,topOfName-Math.round(22*base),base);
+  eyebrow(title,m,topOfName-Math.round(44*base));
   carNumber(m,base);
 }
+
+// heading block used by results + schedule: eyebrow, big title, meta line. Returns y below it.
+function heading(m,base,eyebrowText,titleText,metaText){
+  const top=m+Math.round(W*0.11)+Math.round(40*base); // below logo
+  let y=top;
+  eyebrow(eyebrowText,m,y);y+=Math.round(24*base);
+  bar(m,y+Math.round(6*base),base);y+=Math.round(30*base);
+  const ts=Math.round(88*base);
+  ctx.fillStyle='#fff';ctx.font=head(ts,900);
+  const tl=wrapLines(titleText.toUpperCase(),W-2*m);
+  tl.forEach((l,i)=>ctx.fillText(l,m,y+ts*0.78+i*ts*0.96));
+  y+=tl.length*ts*0.96+Math.round(14*base);
+  if(metaText){ctx.fillStyle='#cfd5de';ctx.font=body(Math.round(28*base),500);const ml=wrapLines(metaText,W-2*m);ml.forEach((l,i)=>ctx.fillText(l,m,y+Math.round(24*base)+i*Math.round(36*base)));y+=ml.length*Math.round(36*base)+Math.round(12*base);}
+  return y;
+}
+
+function drawResults(m,base){
+    const title={pole:'Qualifying results',race:v('race')+' results',round:'Round results'}[tpl];
+  let y=heading(m,base,v('round').toUpperCase(),title,v('champ'));
+  const rows=v('list').split('\n').map(s=>s.trim()).filter(Boolean);
+  const avail=H-m-y;
+  const rowH=Math.min(Math.round(96*base),Math.floor(avail/Math.max(rows.length,1)));
+  const fs=Math.min(Math.round(50*base),Math.round(rowH*0.68));
+  y+=Math.round(rowH*0.55);
+  rows.forEach((r,i)=>{
+    const mm=r.match(/^(\d+)[.)]?\s+(.*?)(?:\s+(\+?[\d:.]+(?:\s?pts)?))?$/i);
+    const pos=mm?mm[1]:String(i+1),name=mm?mm[2]:r,time=mm?mm[3]:'';
+    const yy=y+i*rowH;
+    // divider
+    ctx.fillStyle='rgba(255,255,255,.12)';ctx.fillRect(m,yy+Math.round(rowH*0.32),W-2*m,Math.max(1,Math.round(1.5*base)));
+    ctx.textAlign='left';
+    ctx.fillStyle=i===0?ACCENT:'rgba(255,255,255,.55)';ctx.font=head(fs,800);ctx.fillText(pos,m,yy);
+    ctx.fillStyle='#fff';ctx.font=head(fs,i===0?900:700);ctx.fillText(name,m+Math.round(84*base),yy);
+    if(time){ctx.textAlign='right';ctx.fillStyle='#cfd5de';ctx.font=body(Math.round(fs*0.66),500);ctx.fillText(time,W-m,yy);ctx.textAlign='left';}
+  });
+}
+
+function drawSchedule(m,base){
+  let y=heading(m,base,'RACE WEEKEND',v('round').split('·')[0].trim()+' schedule',v('dates')+(v('champ')?' · '+v('champ'):''));
+  const rows=v('sched').split('\n').map(s=>s.trim()).filter(Boolean);
+  const avail=H-m-y;
+  const rowH=Math.min(Math.round(108*base),Math.floor(avail/Math.max(rows.length,1)));
+  const fs=Math.min(Math.round(46*base),Math.round(rowH*0.55));
+  y+=Math.round(rowH*0.6);
+  let lastDay='';
+  rows.forEach((r,i)=>{
+    const parts=r.split(/\s+[-–—|]\s+/);
+    let when=parts[0]||'',what=parts.slice(1).join(' ')||'';
+    if(!what){what=when;when='';}
+    const dm=when.match(/^(\S+)\s+(.*)$/);const day=dm?dm[1]:'',time=dm?dm[2]:when;
+    const yy=y+i*rowH;
+    ctx.fillStyle='rgba(255,255,255,.12)';ctx.fillRect(m,yy+Math.round(rowH*0.3),W-2*m,Math.max(1,Math.round(1.5*base)));
+    ctx.textAlign='left';
+    ctx.fillStyle=ACCENT;ctx.font=head(Math.round(fs*0.6),800);
+    if(day&&day!==lastDay){ctx.fillText(day.toUpperCase(),m,yy);lastDay=day;}
+    ctx.fillStyle='#cfd5de';ctx.font=body(Math.round(fs*0.8),600);ctx.fillText(time,m+Math.round(110*base),yy);
+    ctx.fillStyle='#fff';ctx.font=head(fs,800);ctx.fillText(what,m+Math.round(290*base),yy);
+  });
+}
+
+function bar(x,y,base){ctx.fillStyle=ACCENT;ctx.fillRect(x,y-Math.round(6*base),Math.round(70*base),Math.round(6*base));}
 function carNumber(m,base){
   if(!v('car'))return;
   ctx.save();ctx.textAlign='right';ctx.textBaseline='alphabetic';ctx.fillStyle='#fff';
@@ -204,14 +295,22 @@ function carNumber(m,base){
 function eyebrow(t,x,y){ctx.fillStyle=ACCENT;ctx.font=head(Math.round(30*W/1080),800);ctx.save();ctx.letterSpacing=(Math.round(8*W/1080))+'px';ctx.fillText(t,x,y);ctx.restore();}
 function logoMark(){if(!logo.complete||!logo.naturalWidth)return;const m=Math.round(W*0.06);const h=Math.round(W*0.11);const w=h*logo.naturalWidth/logo.naturalHeight;ctx.save();ctx.shadowColor='rgba(0,0,0,.5)';ctx.shadowBlur=18;ctx.drawImage(logo,m,m,w,h);ctx.restore();}
 function wrapLines(t,maxw){const words=t.split(' '),out=[];let line='';words.forEach(w=>{const test=line?line+' '+w:w;if(ctx.measureText(test).width>maxw&&line){out.push(line);line=w}else line=test});if(line)out.push(line);return out}
-function wrap(t,x,y,maxw,lh,bottomUp){const ls=wrapLines(t,maxw);if(bottomUp){ls.reverse().forEach((l,i)=>ctx.fillText(l,x,y-i*lh))}else ls.forEach((l,i)=>ctx.fillText(l,x,y+i*lh))}
 
-document.getElementById('dl').onclick=()=>{
-  const a=document.createElement('a');
-  const name=[tpl,v('driver')||'photo',W+'x'+H].join('-').toLowerCase().replace(/[^a-z0-9-]+/g,'-');
-  a.download='smc-'+name+'.png';a.href=c.toDataURL('image/png');a.click();
+function fileName(){
+  const bits=[tpl];
+  if(['pole','race','round'].includes(tpl)){bits.push(slide==='cover'?(v('driver')||'cover'):'results');if(tpl==='race')bits.splice(1,0,v('race'));}
+  bits.push(W+'x'+H);
+  return 'smc-'+bits.join('-').toLowerCase().replace(/[^a-z0-9-]+/g,'-')+'.png';
+}
+function save(){const a=document.createElement('a');a.download=fileName();a.href=c.toDataURL('image/png');a.click();}
+document.getElementById('dl').onclick=save;
+document.getElementById('dlBoth').onclick=()=>{
+  const keep=slide;
+  slide='cover';draw();save();
+  setTimeout(()=>{slide='results';draw();save();slide=keep;draw();},400);
 };
-document.fonts.ready.then(draw);
+window.__smc={draw,set:(o)=>{if(o.tpl)tpl=o.tpl;if(o.slide)slide=o.slide;if(o.fmt){W=o.fmt[0];H=o.fmt[1];c.width=W;c.height=H;}if(o.img)img=o.img;showFields();draw();}};
+draw();
 })();
 </script>
 </body>
