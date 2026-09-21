@@ -16,8 +16,8 @@
   /* Per-circuit presentation data — single source of truth for the home hero
      image, the event page and the calendar track maps. Add a circuit here and
      every data-driven page picks it up automatically.
-     NOTE: real `hero` photos exist for Queensland Raceway and The Bend only;
-     the other two fall back to hero-grid.jpg until photos are supplied.
+     NOTE: real `hero` photos exist for Queensland Raceway, The Bend and
+     Morgan Park; Sydney falls back to hero-grid.jpg until a photo is supplied.
      `blurb` is the intro sentence on the event page — review the wording. */
   const CIRCUITS = {
     "The Bend Motorsport Park": {
@@ -45,7 +45,7 @@
       short: "Morgan Park",
       city:  "Warwick, Queensland",
       map:   "assets/img/tracks/morgan-park.png?v=5",
-      hero:  "assets/img/hero-grid.jpg",
+      hero:  "assets/img/hero-morgan-park.webp",
       blurb: "a tight, technical circuit on the Darling Downs",
     },
   };
