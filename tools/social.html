@@ -302,12 +302,19 @@ function fileName(){
   bits.push(W+'x'+H);
   return 'smc-'+bits.join('-').toLowerCase().replace(/[^a-z0-9-]+/g,'-')+'.png';
 }
-function save(){const a=document.createElement('a');a.download=fileName();a.href=c.toDataURL('image/png');a.click();}
-document.getElementById('dl').onclick=save;
-document.getElementById('dlBoth').onclick=()=>{
+function save(){
+  return new Promise(res=>c.toBlob(b=>{
+    const url=URL.createObjectURL(b),a=document.createElement('a');
+    a.download=fileName();a.href=url;a.style.display='none';document.body.appendChild(a);a.click();
+    setTimeout(()=>{a.remove();URL.revokeObjectURL(url);res();},1200);
+  },'image/png'));
+}
+document.getElementById('dl').onclick=()=>save();
+document.getElementById('dlBoth').onclick=async()=>{
   const keep=slide;
-  slide='cover';draw();save();
-  setTimeout(()=>{slide='results';draw();save();slide=keep;draw();},400);
+  slide='cover';draw();await save();
+  slide='results';draw();await save();
+  slide=keep;draw();
 };
 window.__smc={draw,set:(o)=>{if(o.tpl)tpl=o.tpl;if(o.slide)slide=o.slide;if(o.fmt){W=o.fmt[0];H=o.fmt[1];c.width=W;c.height=H;}if(o.img)img=o.img;showFields();draw();}};
 draw();
