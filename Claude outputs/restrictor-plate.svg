@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" font-family="Inter, Arial, sans-serif">
+  <rect width="1200" height="620" fill="#ffffff"/>
+  <text x="40" y="48" font-size="26" font-weight="700" fill="#161a20">Inlet restrictor plate — R53 (throttle body to supercharger inlet)</text>
+  <text x="40" y="76" font-size="15" fill="#5e6776">Indicative only. Orifice diameter set on the dyno day; flange pattern to match the throttle body fitted.</text>
+
+  <!-- PLAN VIEW -->
+  <g transform="translate(90,130)">
+    <text x="150" y="-14" font-size="15" font-weight="700" fill="#e8112d" text-anchor="middle" letter-spacing="2">FACE VIEW</text>
+    <!-- plate outline -->
+    <rect x="0" y="0" width="300" height="300" rx="28" fill="#dfe4ea" stroke="#161a20" stroke-width="2.5"/>
+    <!-- bolt holes -->
+    <g fill="#ffffff" stroke="#161a20" stroke-width="2">
+      <circle cx="34" cy="34" r="8"/><circle cx="266" cy="34" r="8"/>
+      <circle cx="34" cy="266" r="8"/><circle cx="266" cy="266" r="8"/>
+    </g>
+    <!-- throttle bore reference (dashed) -->
+    <circle cx="150" cy="150" r="76" fill="none" stroke="#5e6776" stroke-width="1.5" stroke-dasharray="6 5"/>
+    <!-- orifice -->
+    <circle cx="150" cy="150" r="50" fill="#ffffff" stroke="#161a20" stroke-width="2.5"/>
+    <!-- radius ring -->
+    <circle cx="150" cy="150" r="58" fill="none" stroke="#161a20" stroke-width="1"/>
+    <!-- orifice dimension -->
+    <line x1="100" y1="150" x2="200" y2="150" stroke="#e8112d" stroke-width="2"/>
+    <line x1="100" y1="142" x2="100" y2="158" stroke="#e8112d" stroke-width="2"/>
+    <line x1="200" y1="142" x2="200" y2="158" stroke="#e8112d" stroke-width="2"/>
+    <text x="150" y="176" font-size="14" font-weight="700" fill="#e8112d" text-anchor="middle">Ø approx. 35–40 mm</text>
+    <!-- stamp -->
+    <text x="150" y="292" font-size="11" fill="#5e6776" text-anchor="middle" letter-spacing="1">SMC 2027 · No. 014 · Ø37.5</text>
+    <!-- labels -->
+    <text x="240" y="118" font-size="12" fill="#5e6776">57 mm throttle bore</text>
+    <text x="240" y="134" font-size="12" fill="#5e6776">(dashed, for reference)</text>
+    <text x="0" y="330" font-size="13" fill="#161a20">Bolt pattern matches the throttle body flange.</text>
+    <text x="0" y="350" font-size="13" fill="#161a20">Serial and bore stamped on the face.</text>
+  </g>
+
+  <!-- SECTION VIEW -->
+  <g transform="translate(560,130)">
+    <text x="290" y="-14" font-size="15" font-weight="700" fill="#e8112d" text-anchor="middle" letter-spacing="2">SECTION THROUGH THE JOINT</text>
+    <!-- throttle body (left) -->
+    <rect x="0" y="70" width="170" height="160" fill="#eef1f4" stroke="#161a20" stroke-width="2"/>
+    <rect x="30" y="105" width="140" height="90" fill="#ffffff" stroke="none"/>
+    <text x="85" y="58" font-size="13" fill="#161a20" text-anchor="middle">Throttle body</text>
+    <text x="85" y="255" font-size="12" fill="#5e6776" text-anchor="middle">air in →</text>
+    <!-- gasket 1 -->
+    <rect x="170" y="70" width="6" height="160" fill="#161a20" opacity=".35"/>
+    <!-- plate -->
+    <rect x="176" y="55" width="26" height="190" fill="#dfe4ea" stroke="#161a20" stroke-width="2.5"/>
+    <!-- orifice cut with radiused entry -->
+    <path d="M176,120 Q186,127 202,130 L202,170 Q186,173 176,180 Z" fill="#ffffff" stroke="#161a20" stroke-width="2"/>
+    <text x="189" y="40" font-size="13" fill="#161a20" text-anchor="middle">Plate</text>
+    <text x="189" y="270" font-size="12" fill="#5e6776" text-anchor="middle">8–10 mm</text>
+    <!-- gasket 2 -->
+    <rect x="202" y="70" width="6" height="160" fill="#161a20" opacity=".35"/>
+    <!-- inlet elbow / supercharger (right) -->
+    <path d="M208,70 L380,70 Q470,70 500,150 Q470,230 380,230 L208,230 Z" fill="#eef1f4" stroke="#161a20" stroke-width="2"/>
+    <path d="M208,105 L370,105 Q430,105 450,150 Q430,195 370,195 L208,195 Z" fill="#ffffff"/>
+    <text x="360" y="58" font-size="13" fill="#161a20" text-anchor="middle">Inlet elbow → supercharger</text>
+    <!-- flow arrows -->
+    <g stroke="#e8112d" stroke-width="2.5" fill="none">
+      <path d="M50,150 L140,150"/><path d="M132,143 L140,150 L132,157"/>
+      <path d="M225,150 L330,150"/><path d="M322,143 L330,150 L322,157"/>
+    </g>
+    <!-- callouts -->
+    <line x1="189" y1="125" x2="240" y2="20" stroke="#5e6776" stroke-width="1"/>
+    <text x="244" y="18" font-size="12" fill="#5e6776">radiused entry, sharp exit</text>
+    <line x1="173" y1="90" x2="120" y2="300" stroke="#5e6776" stroke-width="1"/>
+    <text x="0" y="318" font-size="12" fill="#5e6776">gasket each side</text>
+    <text x="0" y="350" font-size="13" fill="#161a20">All air entering the engine passes through the orifice.</text>
+    <text x="0" y="370" font-size="13" fill="#161a20">Supercharger sits downstream, so it cannot make up the difference.</text>
+    <text x="0" y="390" font-size="13" fill="#161a20">Checked with a plug gauge with the throttle body removed.</text>
+  </g>
+</svg>

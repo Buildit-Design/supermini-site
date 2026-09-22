@@ -158,6 +158,8 @@ nav.main a:hover,nav.main a.active{color:var(--ink)}
 .card .tag{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
 .card h4{margin:8px 0;font-size:1.02rem}
 .card .date{font-size:.78rem;color:var(--muted)}
+.card .pub{font-size:.72rem;color:var(--muted);margin-left:10px}
+.article-meta .pub{color:var(--muted)}
 
 /* feature grid (home news + next race) */
 .feature-grid{display:grid;grid-template-columns:2fr 1fr;gap:30px}
@@ -237,7 +239,6 @@ td.pts{font-weight:800;text-align:right}
   -webkit-mask:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);
           mask:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent)}
 .sponsor-track{display:flex;gap:18px;width:max-content;animation:smc-marquee 32s linear infinite}
-.sponsor-marquee:hover .sponsor-track{animation-play-state:paused}
 @keyframes smc-marquee{from{transform:translateX(0)}to{transform:translateX(calc(-50% - 9px))}}
 @media(prefers-reduced-motion:reduce){.sponsor-track{animation:none;flex-wrap:wrap;justify-content:center}}
 
